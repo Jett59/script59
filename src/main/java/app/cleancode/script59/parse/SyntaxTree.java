@@ -8,10 +8,21 @@ public class SyntaxTree implements SyntaxNode {
     private final List<Token> associatedTokens;
     private final List<SyntaxNode> children;
 
+    private SyntaxNode parent;
+
     public SyntaxTree(List<Token> associatedTokens, List<SyntaxNode> children) {
         this.associatedTokens = associatedTokens;
         this.children = children;
+    }
 
+    @Override
+    public void setParent(SyntaxNode node) {
+        this.parent = node;
+    }
+
+    @Override
+    public Optional<SyntaxNode> parent() {
+        return Optional.ofNullable(parent);
     }
 
     @Override

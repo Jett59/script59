@@ -8,4 +8,8 @@ public interface SyntaxNode {
     List<Token> associatedTokens();
 
     Optional<List<SyntaxNode>> getChildren();
+
+    void setParent(SyntaxNode node);
+
+    Optional<SyntaxNode> parent();
 }
