@@ -11,8 +11,13 @@ public class Start {
                         "Error: compile mode is currently not supported");
             }
             case EXECUTE: {
-                System.out.println(new Lexer().lex(
-                        "public int myInt = 4 * 5; System.out.println (\"Hello there!\\t\");"));
+                Lexer lexer = new Lexer();
+                long start = System.nanoTime();
+                var tokens = lexer
+                        .lex("public int myInt = 4 * 5; System.out.println (\"Hello there!\\t\");");
+                long time = System.nanoTime() - start;
+                System.out.printf("Lex: Time taken: %.3fS\n", time / 1000000000d);
+                System.out.println(tokens);
                 break;
             }
         }
