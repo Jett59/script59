@@ -30,11 +30,14 @@ public class Lexer {
                     tokenType = Token.Type.BODY_CLOSE;
                 } else if (Character.isLetter(startChar)) {
                     tokenType = Token.Type.IDENTIFIER;
+                } else if (startChar == ' ' || startChar == '\n' || startChar == '\t') {
+                    continue;
                 } else {
                     throw new IllegalArgumentException(
                             "Error: token '" + startChar + "' not defined");
                 }
             }
+
         }
     }
 }
