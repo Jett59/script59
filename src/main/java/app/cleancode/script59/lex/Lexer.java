@@ -38,16 +38,34 @@ public class Lexer {
                             "Error: token '" + startChar + "' not defined");
                 }
             } else {
-                if (tokenType == Token.Type.STRING && input.charAt(i) == '\\') {
-                    i++;
-                    continue;
-                }
-                char c = input.charAt(i);
-                if ((c == ' ' || c == '\n' || c == '\t') && tokenType != Token.Type.STRING) {
-                    tokens.add(new Token(tokenType, input.substring(tokenStart, i)));
-                    tokenType = null;
+                if (tokenType == Token.Type.STRING) {
+                    char c = input.charAt(i);
+                    if (c == '\\') {
+                        i++;
+                        continue;
+                    } else if (c == '"' || c == '\'') {
+                        tokens.add(new Token(tokenType, input.substring(tokenStart, i + 1)));
+                        tokenType = null;
+                    }
+                } else {
+                    char c = input.charAt(i);
+                    if ((c == ' ' || c == '\n' || c == '\t')
+                            || (tokenType == Token.Type.OPERATOR && !isOperator(c))
+                            || (tokenType != Token.Type.OPERATOR && isOperator(c))
+                            || (c == ';' || c == '(' || c == ')' || c == '{' || c == '}' || c == '"'
+                                    || c == '\'')) {
+                        tokens.add(new Token(tokenType, input.substring(tokenStart, i)));
+                        tokenType = null;
+                        i--;
+                    }
                 }
             }
+        }
+        if (tokenType == Token.Type.STRING) {
+            throw new IllegalArgumentException("Error: Unexpected end of file before close quote");
+        }
+        if (tokenType != null) {
+            tokens.add(new Token(tokenType, input.substring(tokenStart)));
         }
         return tokens;
     }
