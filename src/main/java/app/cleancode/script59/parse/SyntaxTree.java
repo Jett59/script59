@@ -35,4 +35,12 @@ public class SyntaxTree implements SyntaxNode {
         return Optional.ofNullable(children);
     }
 
+    @Override
+    public String toString() {
+        return associatedTokens.stream().map(Token::toString).toList().toString() + "("
+                + String.join(", ", getChildren().orElse(List.of()).stream()
+                        .map(child -> child.toString()).toList().toArray(new String[0]))
+                + ")";
+    }
+
 }

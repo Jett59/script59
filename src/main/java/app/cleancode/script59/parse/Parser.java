@@ -52,8 +52,9 @@ public class Parser {
     private SyntaxNode buildCallSyntaxNode(List<Token> statement) {
         SyntaxTree result = new SyntaxTree(List.of(statement.get(0)), new ArrayList<>());
         int paramStart = 2;
-        for (int i = 2; i < statement.size() - 2; i++) {
-            if (statement.get(i).value().equals(",")) {
+        for (int i = 2; i < statement.size() - 1; i++) {
+            Token token = statement.get(i);
+            if (token.value().equals(",") || token.type().equals(Token.Type.ARGLIST_CLOSE)) {
                 result.getChildren().get()
                         .add(buildValueSyntaxNode(statement.subList(paramStart, i)));
                 paramStart = i + 1;

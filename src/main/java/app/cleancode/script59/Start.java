@@ -4,6 +4,8 @@ import java.util.List;
 import app.cleancode.script59.divider.Divider;
 import app.cleancode.script59.lex.Lexer;
 import app.cleancode.script59.lex.Token;
+import app.cleancode.script59.parse.Parser;
+import app.cleancode.script59.parse.SyntaxTree;
 
 public class Start {
     public static void main(String[] args) {
@@ -16,8 +18,7 @@ public class Start {
             case EXECUTE: {
                 Lexer lexer = new Lexer();
                 long start = System.nanoTime();
-                var tokens = lexer
-                        .lex("public int myInt = 4 * 5; System.out.println (\"Hello there!\\t\");");
+                var tokens = lexer.lex("printf (\"Hello, World!\");");
                 long time = System.nanoTime() - start;
                 System.out.printf("Lex: Time taken: %.3fS\n", time / 1000000000d);
                 Divider divider = new Divider();
@@ -25,7 +26,12 @@ public class Start {
                 List<List<Token>> dividedTokens = divider.divide(tokens);
                 time = System.nanoTime() - start;
                 System.out.printf("Divide: Time taken: %.3fS\n", time / 1000000000d);
-                System.out.println(dividedTokens);
+                Parser parser = new Parser();
+                start = System.nanoTime();
+                SyntaxTree syntaxTree = parser.parse(dividedTokens);
+                time = System.nanoTime() - start;
+                System.out.printf("Parse: Time taken: %.3fS\n", time / 1000000000d);
+                System.out.println(syntaxTree);
                 break;
             }
         }
