@@ -39,6 +39,9 @@ public class Start {
                 time = System.nanoTime() - start;
                 System.out.printf("Serialize: Time taken: %.3fS\n", time / 1000000000d);
                 System.out.println(instructions);
+                for (Instruction instruction : instructions) {
+                    instruction.execute();
+                }
                 break;
             }
         }
