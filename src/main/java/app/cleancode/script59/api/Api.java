@@ -29,6 +29,7 @@ public class Api {
             default:
                 break;
         }
+        arguments.clear();
     }
 
 }

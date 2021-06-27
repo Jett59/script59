@@ -8,7 +8,8 @@ public class ArgumentLoadInstruction implements Instruction {
 
     public ArgumentLoadInstruction(SymbolLookup symbolLookup, Token token) {
         if (token.type().equals(Token.Type.STRING)) {
-            this.argument = token.value().substring(1, token.value().length() - 1);
+            this.argument =
+                    token.value().substring(1, token.value().length() - 1).translateEscapes();
         } else {
             throw new IllegalArgumentException("Error: invalid token type " + token.type());
         }
