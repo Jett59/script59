@@ -9,6 +9,10 @@ public class Api {
         return INSTANCE;
     }
 
+    public void argumentLoad(Object argument) {
+
+    }
+
     public void initiateCall(Symbol symbol) {
 
     }

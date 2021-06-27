@@ -3,7 +3,7 @@ package app.cleancode.script59.serialize;
 import java.util.Stack;
 
 public class SymbolLookup {
-    private Stack<SymbolTable> symbolTables = new Stack();
+    private Stack<SymbolTable> symbolTables = new Stack<>();
 
     public void pushSymbolTable(SymbolTable table) {
         symbolTables.push(table);
