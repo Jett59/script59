@@ -20,7 +20,8 @@ public class Start {
             case EXECUTE: {
                 Lexer lexer = new Lexer();
                 long start = System.nanoTime();
-                var tokens = lexer.lex("printf (\"%s, %s!\\n\", \"Hello\", \"World\");");
+                var tokens =
+                        lexer.lex("printf (\"%s, %s %.3f!\\n\", \"Hello\", \"World\", 123.456);");
                 long time = System.nanoTime() - start;
                 System.out.printf("Lex: Time taken: %.3fS\n", time / 1000000000d);
                 Divider divider = new Divider();

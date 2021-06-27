@@ -71,7 +71,7 @@ public class Parser {
         }
         SyntaxTree result = new SyntaxTree(new ArrayList<>(), new ArrayList<>(), null);
         Token token = statement.get(0);
-        if (token.type().equals(Token.Type.STRING)) {
+        if (token.type().equals(Token.Type.STRING) || token.type().equals(Token.Type.NUMBER)) {
             result.associatedTokens().add(token);
         } else {
             throw new IllegalArgumentException(

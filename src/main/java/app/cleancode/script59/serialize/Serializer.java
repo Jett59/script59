@@ -22,7 +22,9 @@ public class Serializer {
                     String functionName = node.associatedTokens().get(0).value();
                     for (int i = 0; i < node.getChildren().get().size(); i++) {
                         SyntaxNode argNode = node.getChildren().get().get(i);
-                        if (argNode.associatedTokens().get(0).type().equals(Token.Type.STRING)) {
+                        Token.Type tokenType = argNode.associatedTokens().get(0).type();
+                        if (tokenType.equals(Token.Type.STRING)
+                                || tokenType.equals(Token.Type.NUMBER)) {
                             result.add(new ArgumentLoadInstruction(lookup,
                                     argNode.associatedTokens().get(0)));
                         }
