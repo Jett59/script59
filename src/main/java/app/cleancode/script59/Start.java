@@ -37,8 +37,8 @@ public class Start {
                 start = System.nanoTime();
                 List<Instruction> instructions = serializer.serialize(syntaxTree);
                 time = System.nanoTime() - start;
-                System.out.printf("Serialize: Time taken: %.3fS", time / 1000000000d);
-                System.out.println(syntaxTree);
+                System.out.printf("Serialize: Time taken: %.3fS\n", time / 1000000000d);
+                System.out.println(instructions);
                 break;
             }
         }
