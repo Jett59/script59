@@ -4,8 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SymbolTable {
+    private static long symbolCount = 0;
+
     private Map<String, Symbol> symbols = new HashMap<>();
-    private long symbolCount = 0;
 
     public void declareSymbol(String name, SymbolType type, String signature) {
         symbols.put(name, new Symbol(symbolCount, type, signature));
