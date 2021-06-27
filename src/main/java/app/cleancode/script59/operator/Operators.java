@@ -1,7 +1,7 @@
 package app.cleancode.script59.operator;
 
 public class Operators {
-    private static char[] OPERATORS = new char[] {'+', '-', '*', '/', '='};
+    private static char[] OPERATORS = new char[] {'+', '-', '*', '/', '=', ','};
 
     public static boolean isOperator(char c) {
         for (char operator : OPERATORS) {
