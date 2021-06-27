@@ -12,4 +12,6 @@ public interface SyntaxNode {
     void setParent(SyntaxNode node);
 
     Optional<SyntaxNode> parent();
+
+    Optional<StatementType> statementType();
 }

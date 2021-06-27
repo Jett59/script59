@@ -7,12 +7,15 @@ import app.cleancode.script59.lex.Token;
 public class SyntaxTree implements SyntaxNode {
     private final List<Token> associatedTokens;
     private final List<SyntaxNode> children;
+    private final StatementType statementType;
 
     private SyntaxNode parent;
 
-    public SyntaxTree(List<Token> associatedTokens, List<SyntaxNode> children) {
+    public SyntaxTree(List<Token> associatedTokens, List<SyntaxNode> children,
+            StatementType statementType) {
         this.associatedTokens = associatedTokens;
         this.children = children;
+        this.statementType = statementType;
     }
 
     @Override
@@ -33,6 +36,11 @@ public class SyntaxTree implements SyntaxNode {
     @Override
     public Optional<List<SyntaxNode>> getChildren() {
         return Optional.ofNullable(children);
+    }
+
+    @Override
+    public Optional<StatementType> statementType() {
+        return Optional.ofNullable(statementType);
     }
 
     @Override

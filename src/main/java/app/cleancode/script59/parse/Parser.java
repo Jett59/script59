@@ -6,7 +6,7 @@ import app.cleancode.script59.lex.Token;
 
 public class Parser {
     public SyntaxTree parse(List<List<Token>> statements) {
-        SyntaxTree result = new SyntaxTree(List.of(), new ArrayList<>());
+        SyntaxTree result = new SyntaxTree(List.of(), new ArrayList<>(), null);
         SyntaxNode currentScope = result;
         for (List<Token> statement : statements) {
             Token endToken = statement.get(statement.size() - 1);
@@ -50,7 +50,8 @@ public class Parser {
     }
 
     private SyntaxNode buildCallSyntaxNode(List<Token> statement) {
-        SyntaxTree result = new SyntaxTree(List.of(statement.get(0)), new ArrayList<>());
+        SyntaxTree result =
+                new SyntaxTree(List.of(statement.get(0)), new ArrayList<>(), StatementType.CALL);
         int paramStart = 2;
         for (int i = 2; i < statement.size() - 1; i++) {
             Token token = statement.get(i);
@@ -68,7 +69,7 @@ public class Parser {
             throw new IllegalArgumentException(
                     "Error: only one token is supported in value expressions");
         }
-        SyntaxTree result = new SyntaxTree(new ArrayList<>(), new ArrayList<>());
+        SyntaxTree result = new SyntaxTree(new ArrayList<>(), new ArrayList<>(), null);
         Token token = statement.get(0);
         if (token.type().equals(Token.Type.STRING)) {
             result.associatedTokens().add(token);
