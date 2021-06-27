@@ -31,7 +31,8 @@ public class Lexer {
                     tokenType = Token.Type.BODY_CLOSE;
                 } else if (Character.isLetter(startChar)) {
                     tokenType = Token.Type.IDENTIFIER;
-                } else if (startChar == ' ' || startChar == '\n' || startChar == '\t') {
+                } else if (startChar == ' ' || startChar == '\n' || startChar == '\r'
+                        || startChar == '\t') {
                     continue;
                 } else {
                     throw new IllegalArgumentException(
@@ -49,7 +50,7 @@ public class Lexer {
                     }
                 } else {
                     char c = input.charAt(i);
-                    if ((c == ' ' || c == '\n' || c == '\t')
+                    if ((c == ' ' || c == '\n' || c == '\r' || c == '\t')
                             || (tokenType == Token.Type.OPERATOR && !isOperator(c))
                             || (tokenType != Token.Type.OPERATOR && isOperator(c))
                             || (c == ';' || c == '(' || c == ')' || c == '{' || c == '}' || c == '"'
