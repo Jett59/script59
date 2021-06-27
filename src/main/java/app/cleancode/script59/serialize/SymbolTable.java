@@ -9,7 +9,7 @@ public class SymbolTable {
     private Map<String, Symbol> symbols = new HashMap<>();
 
     public void declareSymbol(String name, SymbolType type, String signature) {
-        symbols.put(name, new Symbol(symbolCount, type, signature));
+        symbols.put(name, new Symbol(name, symbolCount, type, signature));
         symbolCount++;
     }
 

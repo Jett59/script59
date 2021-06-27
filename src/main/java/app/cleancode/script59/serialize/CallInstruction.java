@@ -12,7 +12,11 @@ public class CallInstruction implements Instruction {
     @Override
     public void execute() {
         Api.getInstance().initiateCall(functionSymbol);
+    }
 
+    @Override
+    public String toString() {
+        return "Call " + functionSymbol.name();
     }
 
 }

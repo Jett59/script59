@@ -1,5 +1,5 @@
 package app.cleancode.script59.serialize;
 
-public record Symbol(long id, SymbolType type, String signature) {
+public record Symbol(String name, long id, SymbolType type, String signature) {
 
 }

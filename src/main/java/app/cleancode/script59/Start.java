@@ -6,6 +6,8 @@ import app.cleancode.script59.lex.Lexer;
 import app.cleancode.script59.lex.Token;
 import app.cleancode.script59.parse.Parser;
 import app.cleancode.script59.parse.SyntaxTree;
+import app.cleancode.script59.serialize.Instruction;
+import app.cleancode.script59.serialize.Serializer;
 
 public class Start {
     public static void main(String[] args) {
@@ -31,6 +33,11 @@ public class Start {
                 SyntaxTree syntaxTree = parser.parse(dividedTokens);
                 time = System.nanoTime() - start;
                 System.out.printf("Parse: Time taken: %.3fS\n", time / 1000000000d);
+                Serializer serializer = new Serializer();
+                start = System.nanoTime();
+                List<Instruction> instructions = serializer.serialize(syntaxTree);
+                time = System.nanoTime() - start;
+                System.out.printf("Serialize: Time taken: %.3fS", time / 1000000000d);
                 System.out.println(syntaxTree);
                 break;
             }

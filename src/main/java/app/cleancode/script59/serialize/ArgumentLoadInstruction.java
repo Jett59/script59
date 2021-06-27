@@ -18,4 +18,9 @@ public class ArgumentLoadInstruction implements Instruction {
     public void execute() {
         Api.getInstance().argumentLoad(argument);
     }
+
+    @Override
+    public String toString() {
+        return "Load argument: " + argument.toString();
+    }
 }
