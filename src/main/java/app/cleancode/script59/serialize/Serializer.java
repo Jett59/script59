@@ -2,6 +2,7 @@ package app.cleancode.script59.serialize;
 
 import java.util.ArrayList;
 import java.util.List;
+import app.cleancode.script59.api.Signatures;
 import app.cleancode.script59.api.Stdlib;
 import app.cleancode.script59.lex.TokenType;
 import app.cleancode.script59.parse.SyntaxNode;
@@ -15,6 +16,7 @@ public class Serializer {
     }
 
     public List<Instruction> serialize(SyntaxTree tree) {
+        lookup.pushSymbolTable(new SymbolTable());
         List<Instruction> result = new ArrayList<>();
         for (SyntaxNode node : tree.getChildren().get()) {
             switch (node.statementType().get()) {
@@ -32,8 +34,20 @@ public class Serializer {
                     result.add(new CallInstruction(lookup, functionName));
                     break;
                 }
+                case FUNCTION_DECLARE: {
+                    lookup.getTopSymbolTable().declareSymbol(node.associatedTokens().get(0).value(),
+                            SymbolType.FUNCTION, Signatures.getSignatureForFunction(node));
+                    break;
+                }
+                case FUNCTION_DEFINE: {
+                    break;
+                }
+                case RETURN: {
+                    break;
+                }
             }
         }
+        lookup.popSymbolTable();
         return result;
     }
 }

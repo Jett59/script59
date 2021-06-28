@@ -57,8 +57,6 @@ public class Parser {
         SyntaxTree result =
                 new SyntaxTree(List.of(statement.get(1), statement.get(statement.size() - 2)),
                         new ArrayList<>(), StatementType.FUNCTION_DECLARE);
-        SyntaxTree arguments = new SyntaxTree(List.of(), new ArrayList<>(), null);
-        result.getChildren().get().add(arguments);
         Token type = null;
         for (int i = 3; i < statement.size() - 2; i++) {
             Token token = statement.get(i);
@@ -79,7 +77,7 @@ public class Parser {
             if (type == null) {
                 type = token;
             } else {
-                arguments.getChildren().get().add(new SyntaxTree(List.of(type, token), null, null));
+                result.getChildren().get().add(new SyntaxTree(List.of(type, token), null, null));
                 type = null;
             }
         }
