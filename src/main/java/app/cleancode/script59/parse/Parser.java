@@ -12,15 +12,7 @@ public class Parser {
         for (List<Token> statement : statements) {
             switch (StatementType.of(statement)) {
                 case CALL: {
-                    String currentScopeName = currentScope.toString();
-                    currentScope.getChildren().ifPresentOrElse(children -> {
-                        children.add(buildCallSyntaxNode(statement));
-                    }, () -> {
-                        throw new RuntimeException(
-                                "An internal error occured while processing a statement: children of scope "
-                                        + currentScopeName
-                                        + " is null or does not support children");
-                    });
+                    currentScope.getChildren().get().add(buildCallSyntaxNode(statement));
                     break;
                 }
                 case FUNCTION_DECLARE: {
@@ -28,9 +20,28 @@ public class Parser {
                     break;
                 }
                 case FUNCTION_DEFINE: {
+                    if (currentScope != result) {
+                        throw new IllegalArgumentException(
+                                "Error: functions may only appear on the root of the file");
+                    }
+                    SyntaxNode function = new SyntaxTree(List.of(), new ArrayList<>(),
+                            StatementType.FUNCTION_DEFINE);
+                    currentScope.getChildren().get().add(function);
+                    function.setParent(currentScope);
+                    function.getChildren().get().add(buildDeclareFunctionSyntaxNode(statement));
+                    currentScope = function;
                     break;
                 }
                 case RETURN: {
+                    break;
+                }
+                case FUNCTION_END: {
+                    if (currentScope.parent().isPresent()) {
+                        currentScope = currentScope.parent().get();
+                    } else {
+                        throw new IllegalArgumentException("Error: Too many occurances of '"
+                                + statement.get(0).value() + "': Delete this token");
+                    }
                     break;
                 }
             }

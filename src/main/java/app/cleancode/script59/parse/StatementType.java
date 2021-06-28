@@ -1,6 +1,7 @@
 package app.cleancode.script59.parse;
 
 import static app.cleancode.script59.lex.TokenType.ARGLIST_OPEN;
+import static app.cleancode.script59.lex.TokenType.BODY_CLOSE;
 import static app.cleancode.script59.lex.TokenType.IDENTIFIER;
 import static app.cleancode.script59.lex.TokenType.STATEMENT_END;
 import java.util.List;
@@ -8,7 +9,7 @@ import app.cleancode.script59.lex.Token;
 import app.cleancode.script59.lex.TokenType;
 
 public enum StatementType {
-    CALL, FUNCTION_DECLARE, FUNCTION_DEFINE, RETURN;
+    CALL, FUNCTION_DECLARE, FUNCTION_DEFINE, RETURN, FUNCTION_END;
 
     public static StatementType of(List<Token> statement) {
         Token token1 = statement.get(0);
@@ -44,6 +45,13 @@ public enum StatementType {
                     throw new IllegalArgumentException(
                             "Invalid line ending for return statement: " + lastToken.value());
                 }
+            }
+        } else if (token1Type.equals(BODY_CLOSE)) {
+            if (statement.size() == 1) {
+                return FUNCTION_END;
+            } else {
+                throw new IllegalArgumentException("Error: Unexpected token after '"
+                        + token1.value() + "': '" + statement.get(1).value() + "'");
             }
         }
         throw new IllegalArgumentException("unknown statement: " + String.join(" ",
