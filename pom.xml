@@ -7,7 +7,17 @@
   <properties>
   <java.version>16</java.version>
   <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  
+  <graalvm.version>21.1.0</graalvm.version>
   </properties>
+  <dependencies>
+  <dependency>
+  <groupId>org.graalvm.sdk</groupId>
+  <artifactId>graal-sdk</artifactId>
+  <version>${graalvm.version}</version>
+  <scope>provided</scope>
+  </dependency>
+  </dependencies>
   
   <build>
   <plugins>
@@ -19,6 +29,27 @@
   <target>${java.version}</target>
   <source>${java.version}</source>
   <release>${java.version}</release>
+  </configuration>
+  </plugin>
+  <plugin>
+  <groupId>org.graalvm.nativeimage</groupId>
+  <artifactId>native-image-maven-plugin</artifactId>
+  <version>${graalvm.version}</version>
+  <executions>
+  <execution>
+  <goals>
+  <goal>native-image</goal>
+  </goals>
+  <phase>package</phase>
+  </execution>
+  </executions>
+  <configuration>
+  <skip>false</skip>
+  <imageName>sfn</imageName>
+  <mainClass>app.cleancode.script59.Start</mainClass>
+  <buildArgs>
+  --no-fallback
+  </buildArgs>
   </configuration>
   </plugin>
   </plugins>
