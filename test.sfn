@@ -1,5 +1,6 @@
 dfunc sum (double a, double b) double {
 printf ("Yay!");
+return 100d;
 }
 
 printf ("Welcome to Script 59! Here are some nice little feature demonstrations:\n\n");

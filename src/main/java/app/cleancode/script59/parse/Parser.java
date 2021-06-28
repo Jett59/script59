@@ -33,6 +33,7 @@ public class Parser {
                     break;
                 }
                 case RETURN: {
+                    currentScope.getChildren().get().add(buildReturnSyntaxNode(statement));
                     break;
                 }
                 case FUNCTION_END: {
@@ -96,6 +97,13 @@ public class Parser {
             throw new IllegalArgumentException(
                     "Error: Missing parameter name after token " + type.value());
         }
+        return result;
+    }
+
+    private SyntaxNode buildReturnSyntaxNode(List<Token> statement) {
+        SyntaxTree result = new SyntaxTree(List.of(), new ArrayList<>(), StatementType.RETURN);
+        result.getChildren().get()
+                .add(buildValueSyntaxNode(statement.subList(1, statement.size() - 1)));
         return result;
     }
 
