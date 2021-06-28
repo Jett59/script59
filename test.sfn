@@ -1,3 +1,5 @@
+dfunc sum (double a, double b) double;
+
 printf ("Welcome to Script 59! Here are some nice little feature demonstrations:\n\n");
 
 printf ("Printf %%s support: %s\n", "This used to be a %s");

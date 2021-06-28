@@ -10,41 +10,29 @@ public class Parser {
         SyntaxTree result = new SyntaxTree(List.of(), new ArrayList<>(), null);
         SyntaxNode currentScope = result;
         for (List<Token> statement : statements) {
-            Token endToken = statement.get(statement.size() - 1);
-            switch (endToken.type()) {
-                case STATEMENT_END: {
-                    switch (StatementType.of(statement)) {
-                        case CALL: {
-                            String currentScopeName = currentScope.toString();
-                            currentScope.getChildren().ifPresentOrElse(children -> {
-                                children.add(buildCallSyntaxNode(statement));
-                            }, () -> {
-                                throw new RuntimeException(
-                                        "An internal error occured while processing a statement: children of scope "
-                                                + currentScopeName
-                                                + " is null or does not support children");
-                            });
-                            break;
-                        }
-                    }
+            switch (StatementType.of(statement)) {
+                case CALL: {
+                    String currentScopeName = currentScope.toString();
+                    currentScope.getChildren().ifPresentOrElse(children -> {
+                        children.add(buildCallSyntaxNode(statement));
+                    }, () -> {
+                        throw new RuntimeException(
+                                "An internal error occured while processing a statement: children of scope "
+                                        + currentScopeName
+                                        + " is null or does not support children");
+                    });
                     break;
                 }
-                case BODY_OPEN: {
+                case FUNCTION_DECLARE: {
+                    currentScope.getChildren().get().add(buildDeclareFunctionSyntaxNode(statement));
                     break;
                 }
-                case BODY_CLOSE: {
-                    currentScope = currentScope.parent().orElse(null);
-                    if (currentScope == null) {
-                        throw new IllegalArgumentException("Error: Unexpected token '"
-                                + endToken.value() + "' at end of line");
-                    }
+                case FUNCTION_DEFINE: {
                     break;
                 }
-                default:
-                    throw new IllegalArgumentException(
-                            "Error: lines must always end with one of either {, ; or }\nFor statement: "
-                                    + String.join(" ", statement.stream().map(Token::toString)
-                                            .toList().toArray(new String[0])));
+                case RETURN: {
+                    break;
+                }
             }
         }
         return result;
@@ -65,10 +53,48 @@ public class Parser {
         return result;
     }
 
-    private static SyntaxNode buildValueSyntaxNode(List<Token> statement) {
+    private SyntaxNode buildDeclareFunctionSyntaxNode(List<Token> statement) {
+        SyntaxTree result =
+                new SyntaxTree(List.of(statement.get(1), statement.get(statement.size() - 2)),
+                        new ArrayList<>(), StatementType.FUNCTION_DECLARE);
+        SyntaxTree arguments = new SyntaxTree(List.of(), new ArrayList<>(), null);
+        result.getChildren().get().add(arguments);
+        Token type = null;
+        for (int i = 3; i < statement.size() - 2; i++) {
+            Token token = statement.get(i);
+            if (token.value().equals(",")) {
+                if (type != null) {
+                    throw new IllegalArgumentException(
+                            "Error: Missing parameter name after token " + type.value());
+                }
+                continue;
+            }
+            if (token.type().equals(TokenType.ARGLIST_CLOSE)) {
+                if (type != null) {
+                    throw new IllegalArgumentException(
+                            "Error: Missing parameter name after token " + type.value());
+                }
+                break;
+            }
+            if (type == null) {
+                type = token;
+            } else {
+                arguments.getChildren().get().add(new SyntaxTree(List.of(type, token), null, null));
+                type = null;
+            }
+        }
+        if (type != null) {
+            throw new IllegalArgumentException(
+                    "Error: Missing parameter name after token " + type.value());
+        }
+        return result;
+    }
+
+    private SyntaxNode buildValueSyntaxNode(List<Token> statement) {
         if (statement.size() > 1) {
             throw new IllegalArgumentException(
-                    "Error: only one token is supported in value expressions");
+                    "Error: only one token is supported in value expressions\nTokens: "
+                            + statement);
         }
         SyntaxTree result = new SyntaxTree(new ArrayList<>(), new ArrayList<>(), null);
         Token token = statement.get(0);
