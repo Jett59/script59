@@ -16,6 +16,9 @@ public class Start {
     public static void main(String[] args) {
         try {
             ExecutionProperties execution = ExecutionProperties.valueOf(args);
+            if (execution.inputFiles.size() < 1) {
+                throw new IllegalArgumentException("Error: No input files");
+            }
             switch (execution.action) {
                 case COMPILE: {
                     throw new IllegalArgumentException(

@@ -1,0 +1,5 @@
+package app.cleancode.script59.lex;
+
+public enum TokenType {
+    IDENTIFIER, NUMBER, STRING, OPERATOR, ARGLIST_OPEN, ARGLIST_CLOSE, BODY_OPEN, BODY_CLOSE, STATEMENT_END
+}

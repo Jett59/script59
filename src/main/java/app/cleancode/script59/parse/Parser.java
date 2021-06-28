@@ -3,6 +3,7 @@ package app.cleancode.script59.parse;
 import java.util.ArrayList;
 import java.util.List;
 import app.cleancode.script59.lex.Token;
+import app.cleancode.script59.lex.TokenType;
 
 public class Parser {
     public SyntaxTree parse(List<List<Token>> statements) {
@@ -55,7 +56,7 @@ public class Parser {
         int paramStart = 2;
         for (int i = 2; i < statement.size() - 1; i++) {
             Token token = statement.get(i);
-            if (token.value().equals(",") || token.type().equals(Token.Type.ARGLIST_CLOSE)) {
+            if (token.value().equals(",") || token.type().equals(TokenType.ARGLIST_CLOSE)) {
                 result.getChildren().get()
                         .add(buildValueSyntaxNode(statement.subList(paramStart, i)));
                 paramStart = i + 1;
@@ -71,7 +72,7 @@ public class Parser {
         }
         SyntaxTree result = new SyntaxTree(new ArrayList<>(), new ArrayList<>(), null);
         Token token = statement.get(0);
-        if (token.type().equals(Token.Type.STRING) || token.type().equals(Token.Type.NUMBER)) {
+        if (token.type().equals(TokenType.STRING) || token.type().equals(TokenType.NUMBER)) {
             result.associatedTokens().add(token);
         } else {
             throw new IllegalArgumentException(
