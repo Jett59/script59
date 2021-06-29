@@ -1,11 +1,10 @@
 package app.cleancode.script59.serialize;
 
-import app.cleancode.script59.api.Api;
 import app.cleancode.script59.lex.Token;
 import app.cleancode.script59.lex.TokenType;
 import app.cleancode.script59.values.ValueConverter;
 
-public class ArgumentLoadInstruction implements Instruction {
+public class ArgumentLoadInstruction implements LanguageComponent {
     private final Object argument;
 
     public ArgumentLoadInstruction(SymbolLookup symbolLookup, Token token) {
@@ -17,11 +16,6 @@ public class ArgumentLoadInstruction implements Instruction {
         } else {
             throw new IllegalArgumentException("Error: invalid token type " + token.type());
         }
-    }
-
-    @Override
-    public void execute() {
-        Api.getInstance().argumentLoad(argument);
     }
 
     @Override

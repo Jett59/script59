@@ -4,13 +4,12 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import app.cleancode.script59.api.Api;
 import app.cleancode.script59.divider.Divider;
 import app.cleancode.script59.lex.Lexer;
 import app.cleancode.script59.lex.Token;
 import app.cleancode.script59.parse.Parser;
 import app.cleancode.script59.parse.SyntaxTree;
-import app.cleancode.script59.serialize.Instruction;
+import app.cleancode.script59.serialize.LanguageComponent;
 import app.cleancode.script59.serialize.Serializer;
 
 public class Start {
@@ -26,7 +25,7 @@ public class Start {
                             "Error: compile mode is currently not supported");
                 }
                 case EXECUTE: {
-                    List<Instruction> instructions = new ArrayList<>();
+                    List<LanguageComponent> instructions = new ArrayList<>();
                     for (String fileName : execution.inputFiles) {
                         String fileContents =
                                 Files.readString(Paths.get(fileName).toAbsolutePath());
@@ -38,19 +37,6 @@ public class Start {
                         SyntaxTree syntaxTree = parser.parse(dividedTokens);
                         Serializer serializer = new Serializer();
                         instructions.addAll(serializer.serialize(syntaxTree));
-                    }
-                    try {
-                        for (Api.getInstance().executionLocation =
-                                0; Api.getInstance().executionLocation >= 0; Api
-                                        .getInstance().executionLocation++) {
-                            Instruction instruction =
-                                    instructions.get((int) Api.getInstance().executionLocation);
-                            instruction.execute();
-                        }
-                    } catch (Throwable e) {
-                        System.err.println(e.getClass().getSimpleName() + ": " + e.getMessage());
-                        System.err.println("@Instructions: " + Api.getInstance().executionLocation);
-                        e.printStackTrace();
                     }
                     break;
                 }

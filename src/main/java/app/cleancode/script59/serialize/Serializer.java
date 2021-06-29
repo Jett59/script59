@@ -2,7 +2,6 @@ package app.cleancode.script59.serialize;
 
 import java.util.ArrayList;
 import java.util.List;
-import app.cleancode.script59.api.Api;
 import app.cleancode.script59.api.Signatures;
 import app.cleancode.script59.api.Stdlib;
 import app.cleancode.script59.lex.TokenType;
@@ -15,13 +14,13 @@ public class Serializer {
         lookup.pushSymbolTable(Stdlib.SYMBOLS);
     }
 
-    public List<Instruction> serialize(SyntaxNode tree) {
+    public List<LanguageComponent> serialize(SyntaxNode tree) {
         return serialize(tree, 0);
     }
 
-    public List<Instruction> serialize(SyntaxNode tree, int startIndex) {
+    public List<LanguageComponent> serialize(SyntaxNode tree, int startIndex) {
         lookup.pushSymbolTable(new SymbolTable());
-        List<Instruction> result = new ArrayList<>();
+        List<LanguageComponent> result = new ArrayList<>();
         for (int i = startIndex; i < tree.getChildren().get().size(); i++) {
             SyntaxNode node = tree.getChildren().get().get(i);
             switch (node.statementType().get()) {
@@ -51,9 +50,6 @@ public class Serializer {
                                 declaration.associatedTokens().get(0).value(), SymbolType.FUNCTION,
                                 Signatures.getSignatureForFunction(declaration));
                     }
-                    Api.getInstance().registerSymbolLocation(
-                            lookup.getSymbol(declaration.associatedTokens().get(0).value()).id(),
-                            result.size());
                     result.add(new CallInstruction(lookup, "topOfFunctionReached"));
                     result.addAll(serialize(node, 1));
                     result.add(new CallInstruction(lookup, "bottomOfFunctionReached"));
