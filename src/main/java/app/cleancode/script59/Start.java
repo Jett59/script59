@@ -1,16 +1,11 @@
 package app.cleancode.script59;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import app.cleancode.script59.divider.Divider;
-import app.cleancode.script59.lex.Lexer;
-import app.cleancode.script59.lex.Token;
-import app.cleancode.script59.parse.Parser;
-import app.cleancode.script59.parse.SyntaxTree;
-import app.cleancode.script59.serialize.LanguageComponent;
-import app.cleancode.script59.serialize.Serializer;
+import java.nio.file.*;
+import java.util.*;
+import app.cleancode.script59.divider.*;
+import app.cleancode.script59.lex.*;
+import app.cleancode.script59.parse.*;
+import app.cleancode.script59.serialize.*;
 
 public class Start {
     public static void main(String[] args) {
@@ -25,7 +20,6 @@ public class Start {
                             "Error: compile mode is currently not supported");
                 }
                 case EXECUTE: {
-                    List<LanguageComponent> instructions = new ArrayList<>();
                     for (String fileName : execution.inputFiles) {
                         String fileContents =
                                 Files.readString(Paths.get(fileName).toAbsolutePath());
@@ -36,7 +30,10 @@ public class Start {
                         Parser parser = new Parser();
                         SyntaxTree syntaxTree = parser.parse(dividedTokens);
                         Serializer serializer = new Serializer();
-                        instructions.addAll(serializer.serialize(syntaxTree));
+                        List<LanguageComponent> moduleComponents = new ArrayList<>();
+                        moduleComponents.addAll(serializer.serialize(syntaxTree));
+                        System.out.println(String.join("\n", moduleComponents.stream()
+                                .map(LanguageComponent::toString).toList()));
                     }
                     break;
                 }
