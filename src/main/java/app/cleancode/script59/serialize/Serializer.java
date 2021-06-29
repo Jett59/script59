@@ -6,6 +6,8 @@ import app.cleancode.script59.api.Signatures;
 import app.cleancode.script59.api.Stdlib;
 import app.cleancode.script59.lex.TokenType;
 import app.cleancode.script59.parse.SyntaxNode;
+import app.cleancode.script59.values.NamedValueType;
+import app.cleancode.script59.values.ValueType;
 
 public class Serializer {
     private final SymbolLookup lookup = new SymbolLookup();
@@ -41,6 +43,16 @@ public class Serializer {
                 case FUNCTION_DECLARE: {
                     lookup.getTopSymbolTable().declareSymbol(node.associatedTokens().get(0).value(),
                             SymbolType.FUNCTION, Signatures.getSignatureForFunction(node));
+                    result.add(
+                            new FunctionDeclaration(node.associatedTokens().get(0).value(),
+                                    ValueType.valueOf(
+                                            node.associatedTokens().get(1).value().toUpperCase()),
+                                    node.getChildren().get().stream()
+                                            .map(argument -> new NamedValueType(
+                                                    argument.associatedTokens().get(1).value(),
+                                                    ValueType.valueOf(argument.associatedTokens()
+                                                            .get(0).value().toUpperCase())))
+                                            .toList()));
                     break;
                 }
                 case FUNCTION_DEFINE: {
