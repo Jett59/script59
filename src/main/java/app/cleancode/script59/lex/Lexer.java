@@ -56,8 +56,10 @@ public class Lexer {
                             || (c == ';' || c == '(' || c == ')' || c == '{' || c == '}' || c == '"'
                                     || c == '\'')
                             || (!(tokenType.equals(TokenType.IDENTIFIER)
+                                    || tokenType.equals(TokenType.NUMBER)) && Character.isLetter(c))
+                            || (!(tokenType.equals(TokenType.IDENTIFIER)
                                     || tokenType.equals(TokenType.NUMBER))
-                                    && Character.isLetter(c))) {
+                                    && Character.isDigit(c))) {
                         tokens.add(new Token(tokenType, input.substring(tokenStart, i)));
                         tokenType = null;
                         i--;

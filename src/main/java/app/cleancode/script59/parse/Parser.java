@@ -54,12 +54,14 @@ public class Parser {
         SyntaxTree result =
                 new SyntaxTree(List.of(statement.get(0)), new ArrayList<>(), StatementType.CALL);
         int paramStart = 2;
-        for (int i = 2; i < statement.size() - 1; i++) {
-            Token token = statement.get(i);
-            if (token.value().equals(",") || token.type().equals(TokenType.ARGLIST_CLOSE)) {
-                result.getChildren().get()
-                        .add(buildValueSyntaxNode(statement.subList(paramStart, i)));
-                paramStart = i + 1;
+        if (2 < statement.size() - 2) {
+            for (int i = 2; i < statement.size() - 1; i++) {
+                Token token = statement.get(i);
+                if (token.value().equals(",") || token.type().equals(TokenType.ARGLIST_CLOSE)) {
+                    result.getChildren().get()
+                            .add(buildValueSyntaxNode(statement.subList(paramStart, i)));
+                    paramStart = i + 1;
+                }
             }
         }
         return result;
@@ -108,7 +110,7 @@ public class Parser {
     }
 
     private SyntaxNode buildValueSyntaxNode(List<Token> statement) {
-        if (statement.size() > 1) {
+        if (statement.size() != 1) {
             throw new IllegalArgumentException(
                     "Error: only one token is supported in value expressions\nTokens: "
                             + statement);
@@ -118,8 +120,8 @@ public class Parser {
         if (token.type().equals(TokenType.STRING) || token.type().equals(TokenType.NUMBER)) {
             result.associatedTokens().add(token);
         } else {
-            throw new IllegalArgumentException(
-                    "Tokens of type " + token.type() + " are not allowed in value expressions");
+            throw new IllegalArgumentException("Tokens of type " + token.type()
+                    + " are not allowed in value expressions: " + token.value());
         }
         return result;
     }

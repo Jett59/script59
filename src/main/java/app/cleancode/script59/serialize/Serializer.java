@@ -2,6 +2,7 @@ package app.cleancode.script59.serialize;
 
 import java.util.ArrayList;
 import java.util.List;
+import app.cleancode.script59.api.Api;
 import app.cleancode.script59.api.Signatures;
 import app.cleancode.script59.api.Stdlib;
 import app.cleancode.script59.lex.TokenType;
@@ -45,15 +46,21 @@ public class Serializer {
                 }
                 case FUNCTION_DEFINE: {
                     SyntaxNode declaration = node.getChildren().get().get(0);
-                    lookup.getTopSymbolTable().declareSymbol(
-                            declaration.associatedTokens().get(0).value(), SymbolType.FUNCTION,
-                            Signatures.getSignatureForFunction(declaration));
+                    if (!lookup.isPresent(declaration.associatedTokens().get(0).value())) {
+                        lookup.getTopSymbolTable().declareSymbol(
+                                declaration.associatedTokens().get(0).value(), SymbolType.FUNCTION,
+                                Signatures.getSignatureForFunction(declaration));
+                    }
+                    Api.getInstance().registerSymbolLocation(
+                            lookup.getSymbol(declaration.associatedTokens().get(0).value()).id(),
+                            result.size());
                     result.add(new CallInstruction(lookup, "topOfFunctionReached"));
                     result.addAll(serialize(node, 1));
                     result.add(new CallInstruction(lookup, "bottomOfFunctionReached"));
                     break;
                 }
                 case RETURN: {
+                    result.add(new ReturnInstruction());
                     break;
                 }
                 case FUNCTION_END:

@@ -4,6 +4,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import app.cleancode.script59.api.Api;
 import app.cleancode.script59.divider.Divider;
 import app.cleancode.script59.lex.Lexer;
 import app.cleancode.script59.lex.Token;
@@ -39,13 +40,17 @@ public class Start {
                         instructions.addAll(serializer.serialize(syntaxTree));
                     }
                     try {
-                        System.out.println(String.join("\n", instructions.stream()
-                                .map(Instruction::toString).toList().toArray(new String[0])));
-                        for (Instruction instruction : instructions) {
+                        for (Api.getInstance().executionLocation =
+                                0; Api.getInstance().executionLocation >= 0; Api
+                                        .getInstance().executionLocation++) {
+                            Instruction instruction =
+                                    instructions.get((int) Api.getInstance().executionLocation);
                             instruction.execute();
                         }
                     } catch (Throwable e) {
                         System.err.println(e.getClass().getSimpleName() + ": " + e.getMessage());
+                        System.err.println("@Instructions: " + Api.getInstance().executionLocation);
+                        e.printStackTrace();
                     }
                     break;
                 }

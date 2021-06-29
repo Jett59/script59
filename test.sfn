@@ -1,9 +1,11 @@
-dfunc sum (double a, double b) double {
-printf ("Yay!");
-return 100d;
-}
+dfunc printHelp () void;
 
+printHelp ();
+
+dfunc printHelp () void {
 printf ("Welcome to Script 59! Here are some nice little feature demonstrations:\n\n");
 
 printf ("Printf %%s support: %s\n", "This used to be a %s");
 printf ("Printf %%d and %%f support: %d %f\n", 20, 90d);
+exit (0);
+}
