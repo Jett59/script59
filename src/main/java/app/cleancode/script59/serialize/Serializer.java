@@ -6,7 +6,6 @@ import app.cleancode.script59.api.Signatures;
 import app.cleancode.script59.api.Stdlib;
 import app.cleancode.script59.lex.TokenType;
 import app.cleancode.script59.parse.SyntaxNode;
-import app.cleancode.script59.parse.SyntaxTree;
 
 public class Serializer {
     private final SymbolLookup lookup = new SymbolLookup();
@@ -15,15 +14,20 @@ public class Serializer {
         lookup.pushSymbolTable(Stdlib.SYMBOLS);
     }
 
-    public List<Instruction> serialize(SyntaxTree tree) {
+    public List<Instruction> serialize(SyntaxNode tree) {
+        return serialize(tree, 0);
+    }
+
+    public List<Instruction> serialize(SyntaxNode tree, int startIndex) {
         lookup.pushSymbolTable(new SymbolTable());
         List<Instruction> result = new ArrayList<>();
-        for (SyntaxNode node : tree.getChildren().get()) {
+        for (int i = startIndex; i < tree.getChildren().get().size(); i++) {
+            SyntaxNode node = tree.getChildren().get().get(i);
             switch (node.statementType().get()) {
                 case CALL: {
                     String functionName = node.associatedTokens().get(0).value();
-                    for (int i = 0; i < node.getChildren().get().size(); i++) {
-                        SyntaxNode argNode = node.getChildren().get().get(i);
+                    for (int j = 0; j < node.getChildren().get().size(); j++) {
+                        SyntaxNode argNode = node.getChildren().get().get(j);
                         TokenType tokenType = argNode.associatedTokens().get(0).type();
                         if (tokenType.equals(TokenType.STRING)
                                 || tokenType.equals(TokenType.NUMBER)) {
@@ -40,11 +44,20 @@ public class Serializer {
                     break;
                 }
                 case FUNCTION_DEFINE: {
+                    SyntaxNode declaration = node.getChildren().get().get(0);
+                    lookup.getTopSymbolTable().declareSymbol(
+                            declaration.associatedTokens().get(0).value(), SymbolType.FUNCTION,
+                            Signatures.getSignatureForFunction(declaration));
+                    result.add(new CallInstruction(lookup, "topOfFunctionReached"));
+                    result.addAll(serialize(node, 1));
+                    result.add(new CallInstruction(lookup, "bottomOfFunctionReached"));
                     break;
                 }
                 case RETURN: {
                     break;
                 }
+                case FUNCTION_END:
+                    break;
             }
         }
         lookup.popSymbolTable();

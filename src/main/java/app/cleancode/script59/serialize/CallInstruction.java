@@ -10,7 +10,7 @@ public class CallInstruction implements Instruction {
     }
 
     @Override
-    public void execute() {
+    public void execute() throws Throwable {
         Api.getInstance().initiateCall(functionSymbol);
     }
 

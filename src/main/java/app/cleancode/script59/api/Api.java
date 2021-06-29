@@ -19,7 +19,7 @@ public class Api {
 
     private Object returnVal = null;
 
-    public void initiateCall(Symbol symbol) {
+    public void initiateCall(Symbol symbol) throws NoSuchMethodException {
         switch (symbol.name()) {
             case "printf": {
                 Stdio.printf((String) arguments.get(0),
@@ -27,7 +27,7 @@ public class Api {
                 break;
             }
             default:
-                break;
+                throw new NoSuchMethodException(symbol.name());
         }
         arguments.clear();
     }

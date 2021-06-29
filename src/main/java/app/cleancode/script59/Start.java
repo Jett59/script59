@@ -39,8 +39,12 @@ public class Start {
                         Serializer serializer = new Serializer();
                         instructions.addAll(serializer.serialize(syntaxTree));
                     }
-                    for (Instruction instruction : instructions) {
-                        instruction.execute();
+                    try {
+                        for (Instruction instruction : instructions) {
+                            instruction.execute();
+                        }
+                    } catch (Throwable e) {
+                        System.err.println(e.getClass().getSimpleName() + ": " + e.getMessage());
                     }
                     break;
                 }
