@@ -51,8 +51,10 @@ public class Serializer {
                                 Signatures.getSignatureForFunction(declaration));
                     }
                     result.add(new CallInstruction(lookup, "topOfFunctionReached"));
+                    result.add(new BlockStart(declaration.associatedTokens().get(0).value()));
                     result.addAll(serialize(node, 1));
                     result.add(new CallInstruction(lookup, "bottomOfFunctionReached"));
+                    result.add(new BlockEnd());
                     break;
                 }
                 case RETURN: {
