@@ -62,10 +62,8 @@ public class Serializer {
                                 declaration.associatedTokens().get(0).value(), SymbolType.FUNCTION,
                                 Signatures.getSignatureForFunction(declaration));
                     }
-                    result.add(new CallInstruction(lookup, "topOfFunctionReached"));
-                    result.add(new BlockStart(declaration.associatedTokens().get(0).value()));
-                    result.addAll(serialize(node, 1));
-                    result.add(new CallInstruction(lookup, "bottomOfFunctionReached"));
+                    result.add(new BlockStart("entry"));
+                    result.addAll(serialize(node, 0));
                     result.add(new BlockEnd());
                     break;
                 }
