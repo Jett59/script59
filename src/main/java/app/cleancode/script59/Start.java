@@ -35,11 +35,12 @@ public class Start {
                         List<List<Token>> dividedTokens = divider.divide(tokens);
                         Parser parser = new Parser();
                         SyntaxTree syntaxTree = parser.parse(dividedTokens);
-                        System.out.println(syntaxTree);
                         Serializer serializer = new Serializer();
                         instructions.addAll(serializer.serialize(syntaxTree));
                     }
                     try {
+                        System.out.println(String.join("\n", instructions.stream()
+                                .map(Instruction::toString).toList().toArray(new String[0])));
                         for (Instruction instruction : instructions) {
                             instruction.execute();
                         }
