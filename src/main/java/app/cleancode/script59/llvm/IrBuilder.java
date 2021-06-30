@@ -44,6 +44,14 @@ public class IrBuilder {
                                 int value = (Integer) arg;
                                 long pointer = LLVMConstInt(LLVMInt32Type(), value, false);
                                 args[j] = pointer;
+                            } else if (arg instanceof Short) {
+                                short value = (Short) arg;
+                                long pointer = LLVMConstInt(LLVMInt16Type(), value, false);
+                                args[j] = pointer;
+                            } else if (arg instanceof Long) {
+                                long value = (Long) arg;
+                                long pointer = LLVMConstInt(LLVMInt64Type(), value, false);
+                                args[j] = pointer;
                             } else {
                                 System.err.println("Warning: argument " + arg + "is not valid");
                             }
