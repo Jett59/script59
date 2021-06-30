@@ -1,10 +1,14 @@
 package app.cleancode.script59.serialize;
 
-public class CallInstruction implements LanguageComponent {
-    private Symbol functionSymbol;
+import java.util.List;
 
-    public CallInstruction(SymbolLookup symbolLookup, String functionName) {
+public class CallInstruction implements LanguageComponent {
+    public Symbol functionSymbol;
+    public final List<Object> args;
+
+    public CallInstruction(SymbolLookup symbolLookup, String functionName, List<Object> args) {
         this.functionSymbol = symbolLookup.getSymbol(functionName);
+        this.args = args;
     }
 
     @Override

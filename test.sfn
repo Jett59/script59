@@ -1,5 +1,6 @@
 dfunc sum (int a, int b) int;
+dfunc add (int a, int b) int;
 
 dfunc sum (int a, int b) int {
-
+add (1, 2);
 }

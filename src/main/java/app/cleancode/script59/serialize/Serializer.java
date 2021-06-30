@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import app.cleancode.script59.api.Signatures;
 import app.cleancode.script59.api.Stdlib;
+import app.cleancode.script59.lex.Token;
 import app.cleancode.script59.lex.TokenType;
 import app.cleancode.script59.parse.SyntaxNode;
 import app.cleancode.script59.values.NamedValueType;
+import app.cleancode.script59.values.ValueConverter;
 import app.cleancode.script59.values.ValueType;
 
 public class Serializer {
@@ -28,16 +30,20 @@ public class Serializer {
             switch (node.statementType().get()) {
                 case CALL: {
                     String functionName = node.associatedTokens().get(0).value();
-                    for (int j = 0; j < node.getChildren().get().size(); j++) {
-                        SyntaxNode argNode = node.getChildren().get().get(j);
-                        TokenType tokenType = argNode.associatedTokens().get(0).type();
-                        if (tokenType.equals(TokenType.STRING)
-                                || tokenType.equals(TokenType.NUMBER)) {
-                            result.add(new ArgumentLoadInstruction(lookup,
-                                    argNode.associatedTokens().get(0)));
+                    List<Object> arguments = new ArrayList<>(node.getChildren().get().size());
+                    for (SyntaxNode argument : node.getChildren().get()) {
+                        Token token = argument.associatedTokens().get(0);
+                        switch (token.type()) {
+                            case NUMBER:
+                                arguments.add(ValueConverter.toNumber(token.value()));
+                                break;
+                            case STRING:
+                                arguments.add(
+                                        token.value().substring(1, token.value().length() - 1));
+                                break;
                         }
                     }
-                    result.add(new CallInstruction(lookup, functionName));
+                    result.add(new CallInstruction(lookup, functionName, arguments));
                     break;
                 }
                 case FUNCTION_DECLARE: {
