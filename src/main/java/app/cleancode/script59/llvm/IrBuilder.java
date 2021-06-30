@@ -1,5 +1,6 @@
 package app.cleancode.script59.llvm;
 
+import app.cleancode.script59.serialize.BlockStart;
 import app.cleancode.script59.serialize.FunctionDeclaration;
 import app.cleancode.script59.serialize.LanguageComponent;
 import app.cleancode.script59.values.ValueType;
@@ -11,19 +12,36 @@ public class IrBuilder {
     public long buildIrModule(List<LanguageComponent> components, String fileName) {
         long module = LLVMModuleCreateWithName(fileName);
         LLVMSetSourceFileName(module, fileName);
-        for (LanguageComponent component : components) {
+        long builder = LLVMCreateBuilder();
+        for (int i = 0; i < components.size(); i++) {
+            LanguageComponent component = components.get(i);
             switch (component.getClass().getSimpleName()) {
                 case "FunctionDeclaration": {
                     FunctionDeclaration declaration = (FunctionDeclaration) component;
-                    if (LLVMGetNamedFunction(module, declaration.name) == 0) {
-                        LLVMAddFunction(module, declaration.name, getFunctionType(declaration));
-                    }
+                    LLVMGetOrInsertFunction(module, declaration.name, getFunctionType(declaration));
+                    break;
+                }
+                case "BlockStart": {
+                    BlockStart block = (BlockStart) component;
+                    FunctionDeclaration declaration = (FunctionDeclaration) components.get(++i);
+                    long function = LLVMGetOrInsertFunction(module, declaration.name,
+                            getFunctionType(declaration));
+                    long codeBlock = LLVMAppendBasicBlock(function, block.name);
+                    LLVMPositionBuilderAtEnd(builder, codeBlock);
                     break;
                 }
             }
         }
         LLVMDumpModule(module);
         return module;
+    }
+
+    public long LLVMGetOrInsertFunction(long m, CharSequence name, long functionTy) {
+        long result = LLVMGetNamedFunction(m, name);
+        if (result == 0) {
+            result = LLVMAddFunction(m, name, functionTy);
+        }
+        return result;
     }
 
     public long getFunctionType(FunctionDeclaration declaration) {
