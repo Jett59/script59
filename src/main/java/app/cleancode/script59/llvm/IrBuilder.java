@@ -1,14 +1,14 @@
 package app.cleancode.script59.llvm;
 
-import app.cleancode.script59.serialize.BlockStart;
+import app.cleancode.script59.serialize.FunctionStart;
 import app.cleancode.script59.serialize.CallInstruction;
 import app.cleancode.script59.serialize.FunctionDeclaration;
 import app.cleancode.script59.serialize.LanguageComponent;
+import app.cleancode.script59.values.NamedValueType;
 import app.cleancode.script59.values.ValueType;
 import java.util.List;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.system.MemoryStack;
-import org.lwjgl.system.MemoryUtil;
 import static org.lwjgl.llvm.LLVMCore.*;
 
 public class IrBuilder {
@@ -16,28 +16,29 @@ public class IrBuilder {
         long module = LLVMModuleCreateWithName(fileName);
         LLVMSetSourceFileName(module, fileName);
         long builder = LLVMCreateBuilder();
-        for (int i = 0; i < components.size(); i++) {
-            LanguageComponent component = components.get(i);
-            switch (component.getClass().getSimpleName()) {
-                case "FunctionDeclaration": {
-                    FunctionDeclaration declaration = (FunctionDeclaration) component;
-                    LLVMGetOrInsertFunction(module, declaration.name, getFunctionType(declaration));
-                    break;
-                }
-                case "BlockStart": {
-                    BlockStart block = (BlockStart) component;
-                    FunctionDeclaration declaration = (FunctionDeclaration) components.get(++i);
-                    long function = LLVMGetOrInsertFunction(module, declaration.name,
-                            getFunctionType(declaration));
-                    long codeBlock = LLVMAppendBasicBlock(function, block.name);
-                    LLVMPositionBuilderAtEnd(builder, codeBlock);
-                    break;
-                }
-                case "CallInstruction": {
-                    CallInstruction call = (CallInstruction) component;
-                    long function = LLVMGetNamedFunction(module, call.functionSymbol.name());
-                    long[] args = new long[call.args.size()];
-                    try {
+        try {
+            for (int i = 0; i < components.size(); i++) {
+                LanguageComponent component = components.get(i);
+                switch (component.getClass().getSimpleName()) {
+                    case "FunctionDeclaration": {
+                        FunctionDeclaration declaration = (FunctionDeclaration) component;
+                        LLVMGetOrInsertFunction(module, declaration.name,
+                                getFunctionType(declaration));
+                        break;
+                    }
+                    case "FunctionStart": {
+                        FunctionStart functionStart = (FunctionStart) component;
+                        FunctionDeclaration declaration = functionStart.declaration;
+                        long function = LLVMGetOrInsertFunction(module, declaration.name,
+                                getFunctionType(declaration));
+                        long codeBlock = LLVMAppendBasicBlock(function, "entry");
+                        LLVMPositionBuilderAtEnd(builder, codeBlock);
+                        break;
+                    }
+                    case "CallInstruction": {
+                        CallInstruction call = (CallInstruction) component;
+                        long function = LLVMGetNamedFunction(module, call.functionSymbol.name());
+                        long[] args = new long[call.args.size()];
                         for (int j = 0; j < call.args.size(); j++) {
                             Object arg = call.args.get(j);
                             if (arg instanceof Integer) {
@@ -53,21 +54,27 @@ public class IrBuilder {
                                 long pointer = LLVMConstInt(LLVMInt64Type(), value, false);
                                 args[j] = pointer;
                             } else {
-                                System.err.println("Warning: argument " + arg + "is not valid");
+                                throw new UnsupportedOperationException(
+                                        "Error: argument '" + arg + "' is of an unknown type");
                             }
                         }
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                        try (MemoryStack stack = MemoryStack.stackPush()) {
+                            LLVMBuildCall(builder, function, stack.pointers(args), "tmp");
+                        }
+                        break;
                     }
-                    try (MemoryStack stack = MemoryStack.stackPush()) {
-                        LLVMBuildCall(builder, function, stack.pointers(args), "tmp");
-                    }
-                    break;
+                    default:
+                        break;
                 }
-                default:
-                    break;
             }
+        } catch (
+
+        Throwable e) {
+            LLVMDisposeModule(module);
+            LLVMDisposeBuilder(builder);
+            throw new RuntimeException(e);
         }
+
         LLVMDumpModule(module);
         return module;
     }

@@ -5,7 +5,6 @@ import java.util.List;
 import app.cleancode.script59.api.Signatures;
 import app.cleancode.script59.api.Stdlib;
 import app.cleancode.script59.lex.Token;
-import app.cleancode.script59.lex.TokenType;
 import app.cleancode.script59.parse.SyntaxNode;
 import app.cleancode.script59.values.NamedValueType;
 import app.cleancode.script59.values.ValueConverter;
@@ -41,35 +40,23 @@ public class Serializer {
                                 arguments.add(
                                         token.value().substring(1, token.value().length() - 1));
                                 break;
+                            default:
+                                throw new IllegalArgumentException(
+                                        "Error: Unknown symbol type for argument expression "
+                                                + token.type());
                         }
                     }
                     result.add(new CallInstruction(lookup, functionName, arguments));
                     break;
                 }
                 case FUNCTION_DECLARE: {
-                    lookup.getTopSymbolTable().declareSymbol(node.associatedTokens().get(0).value(),
-                            SymbolType.FUNCTION, Signatures.getSignatureForFunction(node));
-                    result.add(
-                            new FunctionDeclaration(node.associatedTokens().get(0).value(),
-                                    ValueType.valueOf(
-                                            node.associatedTokens().get(1).value().toUpperCase()),
-                                    node.getChildren().get().stream()
-                                            .map(argument -> new NamedValueType(
-                                                    argument.associatedTokens().get(1).value(),
-                                                    ValueType.valueOf(argument.associatedTokens()
-                                                            .get(0).value().toUpperCase())))
-                                            .toList()));
+                    result.add(buildFunctionDeclaration(lookup, node));
                     break;
                 }
                 case FUNCTION_DEFINE: {
-                    SyntaxNode declaration = node.getChildren().get().get(0);
-                    if (!lookup.isPresent(declaration.associatedTokens().get(0).value())) {
-                        lookup.getTopSymbolTable().declareSymbol(
-                                declaration.associatedTokens().get(0).value(), SymbolType.FUNCTION,
-                                Signatures.getSignatureForFunction(declaration));
-                    }
-                    result.add(new BlockStart("entry"));
-                    result.addAll(serialize(node, 0));
+                    result.add(new FunctionStart(
+                            buildFunctionDeclaration(lookup, node.getChildren().get().get(0))));
+                    result.addAll(serialize(node, 1));
                     result.add(new BlockEnd());
                     break;
                 }
@@ -83,5 +70,18 @@ public class Serializer {
         }
         lookup.popSymbolTable();
         return result;
+    }
+
+    public FunctionDeclaration buildFunctionDeclaration(SymbolLookup lookup, SyntaxNode node) {
+        lookup.getTopSymbolTable().declareSymbol(node.associatedTokens().get(0).value(),
+                SymbolType.FUNCTION, Signatures.getSignatureForFunction(node));
+        return new FunctionDeclaration(node.associatedTokens().get(0).value(),
+                ValueType.valueOf(node.associatedTokens().get(1).value().toUpperCase()),
+                node.getChildren().get().stream()
+                        .map(argument -> new NamedValueType(
+                                argument.associatedTokens().get(1).value(),
+                                ValueType.valueOf(
+                                        argument.associatedTokens().get(0).value().toUpperCase())))
+                        .toList());
     }
 }
