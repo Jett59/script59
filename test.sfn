@@ -3,3 +3,5 @@ dfunc add (int a, int b) int;
 dfunc sum (int a, int b) int {
 add (1, 2);
 }
+
+dfunc printf (string thing) int;

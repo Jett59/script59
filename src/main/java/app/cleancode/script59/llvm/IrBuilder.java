@@ -4,7 +4,6 @@ import app.cleancode.script59.serialize.FunctionStart;
 import app.cleancode.script59.serialize.CallInstruction;
 import app.cleancode.script59.serialize.FunctionDeclaration;
 import app.cleancode.script59.serialize.LanguageComponent;
-import app.cleancode.script59.values.NamedValueType;
 import app.cleancode.script59.values.ValueType;
 import java.util.List;
 import org.lwjgl.PointerBuffer;
@@ -117,6 +116,7 @@ public class IrBuilder {
             case INT -> LLVMInt32Type();
             case LONG -> LLVMInt64Type();
             case SHORT -> LLVMInt16Type();
+            case STRING -> LLVMPointerType(LLVMInt8Type(), 0);
             default -> -1;
         };
     }
