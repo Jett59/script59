@@ -5,9 +5,9 @@ import app.cleancode.script59.values.ValueType;
 import java.util.List;
 
 public class FunctionDeclaration implements LanguageComponent {
-    private final String name;
-    private final ValueType returnType;
-    private final List<NamedValueType> arguments;
+    public final String name;
+    public final ValueType returnType;
+    public final List<NamedValueType> arguments;
 
     public FunctionDeclaration(String name, ValueType returnType, List<NamedValueType> arguments) {
         this.name = name;

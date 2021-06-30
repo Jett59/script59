@@ -2,8 +2,10 @@ package app.cleancode.script59;
 
 import java.nio.file.*;
 import java.util.*;
+import org.lwjgl.llvm.LLVMCore;
 import app.cleancode.script59.divider.*;
 import app.cleancode.script59.lex.*;
+import app.cleancode.script59.llvm.IrBuilder;
 import app.cleancode.script59.parse.*;
 import app.cleancode.script59.serialize.*;
 
@@ -32,8 +34,9 @@ public class Start {
                         Serializer serializer = new Serializer();
                         List<LanguageComponent> moduleComponents = new ArrayList<>();
                         moduleComponents.addAll(serializer.serialize(syntaxTree));
-                        System.out.println(String.join("\n", moduleComponents.stream()
-                                .map(LanguageComponent::toString).toList()));
+                        IrBuilder irBuilder = new IrBuilder();
+                        long llvmModule = irBuilder.buildIrModule(moduleComponents, fileName);
+                        LLVMCore.LLVMDisposeModule(llvmModule);
                     }
                     break;
                 }
