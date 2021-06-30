@@ -1,11 +1,14 @@
 package app.cleancode.script59.llvm;
 
 import app.cleancode.script59.serialize.BlockStart;
+import app.cleancode.script59.serialize.CallInstruction;
 import app.cleancode.script59.serialize.FunctionDeclaration;
 import app.cleancode.script59.serialize.LanguageComponent;
 import app.cleancode.script59.values.ValueType;
 import java.util.List;
 import org.lwjgl.PointerBuffer;
+import org.lwjgl.system.MemoryStack;
+import org.lwjgl.system.MemoryUtil;
 import static org.lwjgl.llvm.LLVMCore.*;
 
 public class IrBuilder {
@@ -30,6 +33,31 @@ public class IrBuilder {
                     LLVMPositionBuilderAtEnd(builder, codeBlock);
                     break;
                 }
+                case "CallInstruction": {
+                    CallInstruction call = (CallInstruction) component;
+                    long function = LLVMGetNamedFunction(module, call.functionSymbol.name());
+                    long[] args = new long[call.args.size()];
+                    try {
+                        for (int j = 0; j < call.args.size(); j++) {
+                            Object arg = call.args.get(j);
+                            if (arg instanceof Integer) {
+                                int value = (Integer) arg;
+                                long pointer = LLVMConstInt(LLVMInt32Type(), value, false);
+                                args[j] = pointer;
+                            } else {
+                                System.err.println("Warning: argument " + arg + "is not valid");
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    try (MemoryStack stack = MemoryStack.stackPush()) {
+                        LLVMBuildCall(builder, function, stack.pointers(args), "tmp");
+                    }
+                    break;
+                }
+                default:
+                    break;
             }
         }
         LLVMDumpModule(module);
