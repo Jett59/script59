@@ -1,10 +1,7 @@
-dfunc add (int a, int b) int;
+dfunc puts (string thing) int;
 
-dfunc printf (string thing) int;
-
-dfunc sum (int a, int b) int {
-add (1, 2);
-printf ("Hello!");
-printf ("And now for the next print!");
-return 2;
+dfunc main () int {
+puts ("Hello!");
+puts ("And now for the next print!");
+return 0;
 }
