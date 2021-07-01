@@ -21,4 +21,9 @@ public class FunctionDeclaration implements LanguageComponent {
                 + String.join(", ", arguments.stream().map(NamedValueType::toString).toList())
                 + ") " + returnType.toString().toLowerCase() + ";";
     }
+
+    @Override
+    public LanguageComponentType getType() {
+        return LanguageComponentType.FUNCTION_DECLARE;
+    }
 }

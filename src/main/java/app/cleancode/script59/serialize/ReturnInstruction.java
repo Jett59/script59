@@ -12,4 +12,9 @@ public class ReturnInstruction implements LanguageComponent {
         return "return " + returnVal.toString();
     }
 
+    @Override
+    public LanguageComponentType getType() {
+        return LanguageComponentType.RETURN;
+    }
+
 }

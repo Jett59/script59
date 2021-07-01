@@ -4,6 +4,7 @@ import app.cleancode.script59.serialize.FunctionStart;
 import app.cleancode.script59.serialize.CallInstruction;
 import app.cleancode.script59.serialize.FunctionDeclaration;
 import app.cleancode.script59.serialize.LanguageComponent;
+import app.cleancode.script59.serialize.ReturnInstruction;
 import app.cleancode.script59.serialize.Value;
 import app.cleancode.script59.values.ValueType;
 import java.util.List;
@@ -19,14 +20,14 @@ public class IrBuilder {
         try {
             for (int i = 0; i < components.size(); i++) {
                 LanguageComponent component = components.get(i);
-                switch (component.getClass().getSimpleName()) {
-                    case "FunctionDeclaration": {
+                switch (component.getType()) {
+                    case FUNCTION_DECLARE: {
                         FunctionDeclaration declaration = (FunctionDeclaration) component;
                         LLVMGetOrInsertFunction(module, declaration.name,
                                 getFunctionType(declaration));
                         break;
                     }
-                    case "FunctionStart": {
+                    case FUNCTION_START: {
                         FunctionStart functionStart = (FunctionStart) component;
                         FunctionDeclaration declaration = functionStart.declaration;
                         long function = LLVMGetOrInsertFunction(module, declaration.name,
@@ -35,7 +36,7 @@ public class IrBuilder {
                         LLVMPositionBuilderAtEnd(builder, codeBlock);
                         break;
                     }
-                    case "CallInstruction": {
+                    case FUNCTION_CALL: {
                         CallInstruction call = (CallInstruction) component;
                         long function = LLVMGetNamedFunction(module, call.functionSymbol.name());
                         long[] args = new long[call.args.size()];
@@ -46,6 +47,12 @@ public class IrBuilder {
                         try (MemoryStack stack = MemoryStack.stackPush()) {
                             LLVMBuildCall(builder, function, stack.pointers(args), "tmp");
                         }
+                        break;
+                    }
+                    case RETURN: {
+                        ReturnInstruction returnInstruction = (ReturnInstruction) component;
+                        LLVMBuildRet(builder,
+                                buildExpression(returnInstruction.returnVal, builder, module));
                         break;
                     }
                     default:

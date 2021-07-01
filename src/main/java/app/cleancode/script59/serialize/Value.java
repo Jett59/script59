@@ -4,4 +4,9 @@ import app.cleancode.script59.values.ValueType;
 
 public record Value(Object value, ValueType type) implements LanguageComponent {
 
+    @Override
+    public LanguageComponentType getType() {
+        return LanguageComponentType.VALUE;
+    }
+
 }

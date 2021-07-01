@@ -17,4 +17,9 @@ public class CallInstruction implements LanguageComponent {
         return "Call " + functionSymbol.name();
     }
 
+    @Override
+    public LanguageComponentType getType() {
+        return LanguageComponentType.FUNCTION_CALL;
+    }
+
 }

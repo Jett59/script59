@@ -62,7 +62,8 @@ public class Serializer {
                     break;
                 }
                 case RETURN: {
-                    result.add(new ReturnInstruction(buildExpression(node)));
+                    result.add(new ReturnInstruction(
+                            buildExpression(node.getChildren().get().get(0))));
                     break;
                 }
                 case FUNCTION_END:
@@ -90,10 +91,10 @@ public class Serializer {
         if (node.associatedTokens().size() == 1) {
             Token token = node.associatedTokens().get(0);
             switch (token.type()) {
-                case STRING: {
+                case NUMBER: {
                     return ValueConverter.toNumber(token.value());
                 }
-                case NUMBER: {
+                case STRING: {
                     return new Value(token.value().substring(1, token.value().length() - 1),
                             ValueType.STRING);
                 }

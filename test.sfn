@@ -6,4 +6,5 @@ dfunc sum (int a, int b) int {
 add (1, 2);
 printf ("Hello!");
 printf ("And now for the next print!");
+return 2;
 }

@@ -12,4 +12,9 @@ public class FunctionStart implements LanguageComponent {
         return declaration.toString() + " {";
     }
 
+    @Override
+    public LanguageComponentType getType() {
+        return LanguageComponentType.FUNCTION_START;
+    }
+
 }
