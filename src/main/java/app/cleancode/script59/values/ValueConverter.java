@@ -1,19 +1,23 @@
 package app.cleancode.script59.values;
 
+import app.cleancode.script59.serialize.Value;
+
 public class ValueConverter {
-    public static Number toNumber(String str) {
+    public static Value toNumber(String str) {
         char endChar = str.charAt(str.length() - 1);
-        Number result;
+        Value result;
         if (!Character.isDigit(endChar)) {
             switch (endChar) {
                 case 'D':
                 case 'd': {
-                    result = Double.parseDouble(str.substring(0, str.length() - 1));
+                    result = new Value(Double.parseDouble(str.substring(0, str.length() - 1)),
+                            ValueType.DOUBLE);
                     break;
                 }
                 case 'L':
                 case 'l': {
-                    result = Long.parseLong(str.substring(0, str.length() - 1));
+                    result = new Value(Long.parseLong(str.substring(0, str.length() - 1)),
+                            ValueType.LONG);
                     break;
                 }
                 default:
@@ -22,9 +26,9 @@ public class ValueConverter {
             }
         } else {
             if (str.contains(".")) {
-                result = Double.parseDouble(str);
+                result = new Value(Double.parseDouble(str), ValueType.DOUBLE);
             } else {
-                result = Integer.parseInt(str);
+                result = new Value(Integer.parseInt(str), ValueType.INT);
             }
         }
         return result;

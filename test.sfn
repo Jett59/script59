@@ -1,7 +1,9 @@
 dfunc add (int a, int b) int;
 
+dfunc printf (string thing) int;
+
 dfunc sum (int a, int b) int {
 add (1, 2);
+printf ("Hello!");
+printf ("And now for the next print!");
 }
-
-dfunc printf (string thing) int;

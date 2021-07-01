@@ -29,7 +29,8 @@ public class Serializer {
             switch (node.statementType().get()) {
                 case CALL: {
                     String functionName = node.associatedTokens().get(0).value();
-                    List<Object> arguments = new ArrayList<>(node.getChildren().get().size());
+                    List<LanguageComponent> arguments =
+                            new ArrayList<>(node.getChildren().get().size());
                     for (SyntaxNode argument : node.getChildren().get()) {
                         Token token = argument.associatedTokens().get(0);
                         switch (token.type()) {
@@ -37,8 +38,9 @@ public class Serializer {
                                 arguments.add(ValueConverter.toNumber(token.value()));
                                 break;
                             case STRING:
-                                arguments.add(
-                                        token.value().substring(1, token.value().length() - 1));
+                                arguments.add(new Value(
+                                        token.value().substring(1, token.value().length() - 1),
+                                        ValueType.STRING));
                                 break;
                             default:
                                 throw new IllegalArgumentException(
@@ -57,11 +59,10 @@ public class Serializer {
                     result.add(new FunctionStart(
                             buildFunctionDeclaration(lookup, node.getChildren().get().get(0))));
                     result.addAll(serialize(node, 1));
-                    result.add(new BlockEnd());
                     break;
                 }
                 case RETURN: {
-                    result.add(new ReturnInstruction());
+                    result.add(new ReturnInstruction(buildExpression(node)));
                     break;
                 }
                 case FUNCTION_END:
@@ -83,5 +84,26 @@ public class Serializer {
                                 ValueType.valueOf(
                                         argument.associatedTokens().get(0).value().toUpperCase())))
                         .toList());
+    }
+
+    public LanguageComponent buildExpression(SyntaxNode node) {
+        if (node.associatedTokens().size() == 1) {
+            Token token = node.associatedTokens().get(0);
+            switch (token.type()) {
+                case STRING: {
+                    return ValueConverter.toNumber(token.value());
+                }
+                case NUMBER: {
+                    return new Value(token.value().substring(1, token.value().length() - 1),
+                            ValueType.STRING);
+                }
+                default:
+                    throw new UnsupportedOperationException("Error: tokens of type " + token.type()
+                            + " are not supported as expressions");
+            }
+        } else {
+            throw new IllegalArgumentException(
+                    "Error: expressions must have exactly one element\n" + node);
+        }
     }
 }

@@ -4,6 +4,7 @@ import app.cleancode.script59.serialize.FunctionStart;
 import app.cleancode.script59.serialize.CallInstruction;
 import app.cleancode.script59.serialize.FunctionDeclaration;
 import app.cleancode.script59.serialize.LanguageComponent;
+import app.cleancode.script59.serialize.Value;
 import app.cleancode.script59.values.ValueType;
 import java.util.List;
 import org.lwjgl.PointerBuffer;
@@ -39,23 +40,8 @@ public class IrBuilder {
                         long function = LLVMGetNamedFunction(module, call.functionSymbol.name());
                         long[] args = new long[call.args.size()];
                         for (int j = 0; j < call.args.size(); j++) {
-                            Object arg = call.args.get(j);
-                            if (arg instanceof Integer) {
-                                int value = (Integer) arg;
-                                long pointer = LLVMConstInt(LLVMInt32Type(), value, false);
-                                args[j] = pointer;
-                            } else if (arg instanceof Short) {
-                                short value = (Short) arg;
-                                long pointer = LLVMConstInt(LLVMInt16Type(), value, false);
-                                args[j] = pointer;
-                            } else if (arg instanceof Long) {
-                                long value = (Long) arg;
-                                long pointer = LLVMConstInt(LLVMInt64Type(), value, false);
-                                args[j] = pointer;
-                            } else {
-                                throw new UnsupportedOperationException(
-                                        "Error: argument '" + arg + "' is of an unknown type");
-                            }
+                            LanguageComponent arg = call.args.get(j);
+                            args[j] = buildExpression(arg, builder, module);
                         }
                         try (MemoryStack stack = MemoryStack.stackPush()) {
                             LLVMBuildCall(builder, function, stack.pointers(args), "tmp");
@@ -66,9 +52,7 @@ public class IrBuilder {
                         break;
                 }
             }
-        } catch (
-
-        Throwable e) {
+        } catch (Throwable e) {
             LLVMDisposeModule(module);
             LLVMDisposeBuilder(builder);
             throw new RuntimeException(e);
@@ -119,6 +103,75 @@ public class IrBuilder {
             case STRING -> LLVMPointerType(LLVMInt8Type(), 0);
             default -> -1;
         };
+    }
+
+    public long LLVMConstGlobalString(long m, String data, CharSequence name) {
+        byte[] bytes = data.getBytes();
+        long array = LLVMAddGlobal(m, LLVMArrayType(LLVMInt8Type(), bytes.length + 1), name);
+        long[] elements = new long[bytes.length + 1];
+        for (int i = 0; i < bytes.length; i++) {
+            elements[i] = LLVMConstInt(LLVMInt8Type(), bytes[i], false);
+        }
+        elements[elements.length - 1] = LLVMConstInt(LLVMInt8Type(), 0, false);
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            LLVMSetInitializer(array, LLVMConstArray(LLVMInt8Type(), stack.pointers(elements)));
+        }
+        return array;
+    }
+
+    public long buildExpression(LanguageComponent component, long builder, long module) {
+        if (component instanceof Value) {
+            Value val = (Value) component;
+            long result = 0;
+            switch (val.type()) {
+                case BOOLEAN: {
+                    result = LLVMConstInt(LLVMInt1Type(), (Boolean) val.value() ? 1 : 0, false);
+                    break;
+                }
+                case BYTE: {
+                    result = LLVMConstInt(LLVMInt8Type(), (Byte) val.value(), false);
+                    break;
+                }
+                case CHAR: {
+                    result = LLVMConstInt(LLVMInt8Type(), (Character) val.value(), false);
+                    break;
+                }
+                case DOUBLE: {
+                    result = LLVMConstReal(LLVMDoubleTypeKind, (Double) val.value());
+                    break;
+                }
+                case FLOAT: {
+                    result = LLVMConstReal(LLVMFloatType(), (Float) val.value());
+                    break;
+                }
+                case INT: {
+                    result = LLVMConstInt(LLVMInt32Type(), (Integer) val.value(), false);
+                    break;
+                }
+                case LONG: {
+                    result = LLVMConstInt(LLVMInt64Type(), (Long) val.value(), false);
+                    break;
+                }
+                case SHORT: {
+                    result = LLVMConstInt(LLVMInt16Type(), (Short) val.value(), false);
+                    break;
+                }
+                case STRING: {
+                    result = LLVMConstPointerCast(
+                            LLVMConstGlobalString(module, (String) val.value(), "str"),
+                            LLVMPointerType(LLVMInt8Type(), 0));
+                    break;
+                }
+                case VOID: {
+                    throw new IllegalArgumentException(
+                            "Error: Void is not a valid type for value expressions");
+                }
+            }
+            return result;
+        } else {
+            throw new UnsupportedOperationException("Error: language component '" + component
+                    + "' is not recognised by the ir builder");
+        }
     }
 
 }

@@ -4,9 +4,10 @@ import java.util.List;
 
 public class CallInstruction implements LanguageComponent {
     public Symbol functionSymbol;
-    public final List<Object> args;
+    public final List<LanguageComponent> args;
 
-    public CallInstruction(SymbolLookup symbolLookup, String functionName, List<Object> args) {
+    public CallInstruction(SymbolLookup symbolLookup, String functionName,
+            List<LanguageComponent> args) {
         this.functionSymbol = symbolLookup.getSymbol(functionName);
         this.args = args;
     }
