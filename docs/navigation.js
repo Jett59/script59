@@ -4,10 +4,10 @@ document.getElementById('navigation').innerHTML = '\
 <table>\
 <tr>\
 <td> \
-<a href=\"/index.html\">Home</a> \
+<a href=\"index.html\">Home</a> \
     </td> \
     <td>\
-        <a href=\"/download.html\">Download</a>\
+        <a href=\"download.html\">Download</a>\
     </td>\
 </tr>\
 </table>\
